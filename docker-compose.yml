@@ -1,0 +1,18 @@
+version: '3.5'
+services:
+  backend:
+    container_name: backend_1
+    build: ./backend/
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8000:8000
+  frontend:
+    container_name: frontend_1
+    build: ./frontend/
+    volumes:
+      - ./frontend:/app
+    ports:
+      - 4200:4200
+    depends_on:
+      - backend

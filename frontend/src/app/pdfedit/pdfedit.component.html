@@ -1,0 +1,69 @@
+<p>pdfedit works!</p>
+<section>
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Merge files
+        </mat-panel-title>
+        <mat-panel-description>
+          Choose files to be merged
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <input type="file" (change)="onFileSelected($event, fileid1)">
+      <input type="file" (change)="onFileSelected($event, fileid2)">
+      <br /><br />
+      <form [formGroup]="mergeFilesForm" (ngSubmit)="onSubmitMergeForm()">
+        <input formControlName="fileid1" type="text" #fileid1 />
+        <input formControlName="fileid2" type="text" #fileid2 />
+        <button mat-stroked-button type="submit">Submit</button>
+      </form>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Edit Actions
+        </mat-panel-title>
+        <mat-panel-description>
+          Actions over pdf in sequence
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <input type="file" (change)="onFileSelected($event, fileid)">
+      <mat-select [(value)]="chosenEditOption" placeholder="Choose an action">
+        <mat-option value="ROTATE">ROTATE</mat-option>
+        <mat-option value="SHRINK">SHRINK</mat-option>
+      </mat-select>
+      <button mat-stroked-button type="button" (click)="addEditAction()">Add edit action</button>
+      
+      <form [formGroup]="pdfEditActionsForm" (ngSubmit)="onSubmitEditActionsForm()">
+        <input formControlName="fileid" type="text" #fileid/>
+        <div formArrayName="actionForms">
+          <div *ngFor="let actionControl of actionFormsAsFormArray.controls; let i = index">
+            <ng-container [formGroupName]="i">
+                <input formControlName="type" type="text" readonly>
+                <div formArrayName="keyValues">
+                  <div *ngFor="let keyValueControl of getKeyValuesAsFormArray(actionControl).controls; let j = index">
+                    <ng-container [formGroupName]="j">
+                      <input formControlName="key" type="text" readonly>
+                      <input formControlName="value" type="number">
+                    </ng-container>
+                  </div>
+                </div>
+                <button type="button" (click)="deleteItem(i)">Delete</button>
+            </ng-container>
+          </div>
+        </div>
+        <button mat-stroked-button type="submit">Submit</button>
+        
+      </form>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <pre>
+    {{ mergeFilesForm.value | json }}
+  </pre>
+  <pre>
+    {{ pdfEditActionsForm.value | json }}
+  </pre>
+</section>

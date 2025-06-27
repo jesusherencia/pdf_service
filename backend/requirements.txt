@@ -1,0 +1,5 @@
+pypdf==5.5.0
+pypdf[image]
+PyMuPDF
+fastapi[standard]
+python-multipart
