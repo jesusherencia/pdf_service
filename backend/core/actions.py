@@ -27,9 +27,15 @@ class Action(ABC):
 
 class ActionShrink(Action):
     def execute(self, fileid: str, params: dict):
-        quality = params['quality']
+        call_params = {
+            'fileid': fileid
+        }
+        if 'quality' in params:
+            call_params['img_quality'] = params['quality']
+        if 'dpi' in params:
+            call_params['dpi'] = params['dpi']
         pdf_service = PdfActions()
-        fileid_result = pdf_service.shrink(fileid, quality)
+        fileid_result = pdf_service.shrink2(**call_params)
         return fileid_result
         
 class ActionRotate(Action):
@@ -38,6 +44,10 @@ class ActionRotate(Action):
         pdf_service = PdfActions()
         fileid_result = pdf_service.rotate(fileid, rotate_degree)
         return fileid_result
+
+class ActionResize(Action):
+    def execute(self, fileid: str, params: dict):
+        pass # to be implemented
 
 mappping_type_actionclass = {
     ActionType.SHRINK: ActionShrink(),

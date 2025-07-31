@@ -17,3 +17,9 @@ a link to download an OpenAPI file is shown in the page
 > docker build -t <image_name> .
 - Start container :
 > docker run -d --name <container_name> -v ${PWD}:/app -p 8000:8000 <image_name>
+
+## To run webapp
+
+- Run webapp python:
+From root folder: 
+> python -m web.webapp

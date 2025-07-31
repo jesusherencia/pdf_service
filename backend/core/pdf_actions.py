@@ -10,6 +10,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import A4
 
+from PIL import Image
+
 class PdfActions():
     def __init__(self):
         self.logger = Logger.get_current_logger()
@@ -17,7 +19,7 @@ class PdfActions():
 
     def shrink(self, fileid, quality):
         """
-        Shrink pdf content
+        Shrink pdf content by reducing quality of images in pages
         """
         self.logger.info("Shrink file: " + fileid)
         file_content = FileRepository().get(fileid)
@@ -51,8 +53,57 @@ class PdfActions():
             img_pdf[-1].insert_image(rect, pixmap=img, compress=True)
             new_doc.insert_pdf(img_pdf)
 
-        new_doc.save(output_path, deflate=True)
+        # Create an in-memory bytes buffer
+        output_buffer = BytesIO()
+
+        new_doc.save(output_buffer, deflate=True)
         new_doc.close()
+        # Move to start of the buffer
+        output_buffer.seek(0)
+        
+        res_bytes = output_buffer.read()
+
+    def shrink2(self, fileid, img_quality, dpi=150, compression_effort=5):
+        """
+        Shrink pdf content by reducing quality of pixel map of pages using dpi parameter
+        """
+        file_content = FileRepository().get(fileid)
+        # Load PDF from bytes
+        input_buffer = BytesIO(file_content)
+        doc: fitz.Document = fitz.open(stream=input_buffer, filetype="pdf")
+
+        new_doc = fitz.open()  # empty PDF
+
+        #for page_index in range(len(doc)):
+        #    page = doc[page_index]
+        page: fitz.Page
+        for page in doc:
+            pix = page.get_pixmap(dpi=dpi)
+            
+            img_buffer = BytesIO()
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            img.save(img_buffer, format="JPEG", quality=img_quality)
+            img_buffer.seek(0)
+
+            rect = fitz.Rect(0, 0, pix.width, pix.height)
+            new_page = new_doc.new_page(width=rect.width, height=rect.height)
+            new_page.insert_image(rect, stream=img_buffer.read())
+
+        output_buffer = BytesIO()
+        new_doc.save(
+            output_buffer, 
+            deflate=True, 
+            clean=True, 
+            compression_effort=compression_effort)
+        doc.close()
+        new_doc.close()
+
+        output_buffer.seek(0)
+        out_bytes = output_buffer.read()
+    
+        fileid_result = FileRepository().put(out_bytes)
+        self.logger.info("fileid_result: " + fileid_result)
+        return fileid_result
 
     def rotate(self, fileid, rotate_degree):
         """

@@ -14,7 +14,7 @@ class FileRepository:
         # Initialize class
         pass
         
-    def get(self, file_name):
+    def get(self, file_name) -> bytes:
         """
         Get file contents from disk
         """
