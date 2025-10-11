@@ -30,6 +30,7 @@ For "/pdf_file/webactions" endpoint:
 
 - SHRINK & ROTATE
 
+```json
 {
   "file_id": "1772ed86-4810-4a85-99b4-20f7a77a457c",
   "webactions": [
@@ -48,3 +49,4 @@ For "/pdf_file/webactions" endpoint:
     }
   ]
 }
+```
