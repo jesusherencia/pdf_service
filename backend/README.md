@@ -23,3 +23,28 @@ a link to download an OpenAPI file is shown in the page
 - Run webapp python:
 From root folder: 
 > python -m web.webapp
+
+## Action Params
+
+For "/pdf_file/webactions" endpoint:
+
+- SHRINK & ROTATE
+
+{
+  "file_id": "1772ed86-4810-4a85-99b4-20f7a77a457c",
+  "webactions": [
+    {
+      "type": "SHRINK",
+      "params": {
+        "quality": 50,
+        "dpi": 150
+      }
+    },
+    {
+      "type": "ROTATE",
+      "params": {
+        "rotate_degree": 90
+      }
+    }
+  ]
+}
