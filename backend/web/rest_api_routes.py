@@ -2,7 +2,7 @@ from io import BytesIO
 from fastapi import APIRouter, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 
-from core.actions import ActionType, ActionTypeParams
+from core.actions import ActionType
 from core.file_repository import FileRepository
 from core.pdf_edit_service import PdfEditService
 from typing import List
@@ -38,10 +38,7 @@ async def get_file(file_id: str):
 
 @router.post("/pdf_file/webactions")
 async def execute_actions(file_webactions: FileWebActions):
-    print(file_webactions)
-    actions: List[ActionType] = []
-    for i in file_webactions.webactions:
-        actions.append(ActionTypeParams(ActionType.from_str(i.type), i.params))
+    actions: List[ActionType] = file_webactions.to_actions()
     file_id = PdfEditService().execute_actions(file_webactions.file_id, actions)
     return StockedFile(file_id=file_id)
 

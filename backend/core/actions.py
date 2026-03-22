@@ -15,46 +15,44 @@ class ActionType(Enum):
         else:
             raise NotImplementedError
 
-class ActionTypeParams():
-    def __init__(self, type, params):
-        self.type: ActionType = type
-        self.params: dict = params
-
 class Action(ABC):
+    def __init__(self, params: dict):
+        self.params = params
+    
     @abstractmethod
-    def execute(self, fileid: str, params: dict):
+    def execute(self, fileid: str):
         raise NotImplementedError
 
 class ActionShrink(Action):
-    def execute(self, fileid: str, params: dict):
+    def execute(self, fileid: str):
         call_params = {
             'fileid': fileid
         }
-        if 'quality' in params:
-            call_params['img_quality'] = params['quality']
-        if 'dpi' in params:
-            call_params['dpi'] = params['dpi']
+        if 'quality' in self.params:
+            call_params['img_quality'] = self.params['quality']
+        if 'dpi' in self.params:
+            call_params['dpi'] = self.params['dpi']
         pdf_service = PdfActions()
         fileid_result = pdf_service.shrink2(**call_params)
         return fileid_result
         
 class ActionRotate(Action):
-    def execute(self, fileid: str, params: dict):
-        rotate_degree = params['rotate_degree']
+    def execute(self, fileid: str):
+        rotate_degree = self.params['rotate_degree']
         pdf_service = PdfActions()
         fileid_result = pdf_service.rotate(fileid, rotate_degree)
         return fileid_result
 
 class ActionResize(Action):
-    def execute(self, fileid: str, params: dict):
+    def execute_with_params(self, fileid: str):
         pass # to be implemented
 
-mappping_type_actionclass = {
-    ActionType.SHRINK: ActionShrink(),
-    ActionType.ROTATE: ActionRotate(),
+mappping_action_by_type = {
+    ActionType.SHRINK: lambda params : ActionShrink(params),
+    ActionType.ROTATE: lambda params : ActionRotate(params),
 }
 
 if __name__ == '__main__':
     #pdf_service = PdfService()
     #ActionShrink().execute("data/CBTW_attestation_pole_emploi.pdf", {'quality': 50})
-    ActionRotate().execute("data/CBTW_attestation_pole_emploi.pdf", {'rotate_degree': 90})
+    ActionRotate({'rotate_degree': 90}).execute("data/CBTW_attestation_pole_emploi.pdf")

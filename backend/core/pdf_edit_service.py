@@ -1,5 +1,5 @@
 from core.file_repository import FileRepository
-from core.actions import Action, ActionTypeParams, mappping_type_actionclass
+from core.actions import Action
 from typing import List
 
 from core.pdf_actions import PdfActions
@@ -17,13 +17,12 @@ class PdfEditService():
         fileid = FileRepository().put(file_content)
         return fileid
     
-    def execute_actions(self, fileid, actions_type_params: List[ActionTypeParams]):
+    def execute_actions(self, fileid, actions: List[Action]):
         """
         Execute actions over file identified by fileid
         """
-        for i in actions_type_params:
-            action: Action = mappping_type_actionclass[i.type]
-            fileid = action.execute(fileid, i.params)
+        for action in actions:
+            fileid = action.execute(fileid)
         return fileid
     
     def merge_pdf_files(self, fileid_list: List[str]):
