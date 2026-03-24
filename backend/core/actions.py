@@ -29,7 +29,7 @@ class Action(ABC):
 class ActionShrink(Action):
     """
     params :
-    - img_quality : ex. [20, 50, 80]
+    - img_quality : ex. [20, 50, 80] # percertange
     - dpi : ex. [150, 300]
     """
     def execute(self, fileid: str):
@@ -58,7 +58,7 @@ class ActionRotate(Action):
 class ActionResize(Action):
     """
     params :
-    - scale : ex. [0.5, 1, 2]
+    - scale : ex. [0.5, 1, 2] # multiply width and height by scale
     """
     def execute(self, fileid: str):
         scale = self.params['scale']
