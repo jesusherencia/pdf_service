@@ -124,6 +124,24 @@ class PdfActions():
         self.logger.info("fileid_result: " + fileid_result)
         return fileid_result
 
+    def resize_pdf(self, fileid, scale: float):
+        """
+        Resize pdf content
+        """
+        self.logger.info("Resize file: " + fileid)
+        file_content = FileRepository().get(fileid)
+        pdf_stream = BytesIO(file_content)
+        reader = PdfReader(pdf_stream)
+        writer = PdfWriter()
+
+        for page in reader.pages:
+            page.scale(scale, scale)
+            writer.add_page(page)
+
+        fileid_result = FileRepository().put(self.__pdfwriter_to_bytes(writer))
+        self.logger.info("fileid_result: " + fileid_result)
+        return fileid_result
+
     def __pdfwriter_to_bytes(self, writer: PdfWriter):
         with BytesIO() as bytes_stream:
             writer.write(bytes_stream)
